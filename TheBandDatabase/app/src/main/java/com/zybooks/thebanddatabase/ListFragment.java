@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class ListFragment extends Fragment {
+
     // For the activity to implement
     public interface OnBandSelectedListener {
         void onBandSelected(int bandId);
@@ -26,6 +27,7 @@ public class ListFragment extends Fragment {
     // Reference to the activity
     private OnBandSelectedListener mListener;
 
+    // onCreateView is omitted
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -91,4 +93,29 @@ public class ListFragment extends Fragment {
             return mBands.size();
         }
     }
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnBandSelectedListener) {
+            mListener = (OnBandSelectedListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnBandSelectedListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    private final View.OnClickListener buttonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            // Notify activity of band selection
+            String bandId = (String) view.getTag();
+            mListener.onBandSelected(Integer.parseInt(bandId));
+        }
+    };
 }
